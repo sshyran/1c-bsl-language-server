@@ -86,6 +86,12 @@ public class SourceDefinedMethodCallInlayHintSupplier implements InlayHintSuppli
       .map((List<? extends BSLParser.CallParamContext> callParams) -> {
         var hints = new ArrayList<InlayHint>();
         for (var i = 0; i < parameters.size(); i++) {
+
+          // todo: show all parameters (in config)?
+          if (callParams.size() < i + 1) {
+            break;
+          }
+
           var parameter = parameters.get(i);
           var callParam = callParams.get(i);
 
