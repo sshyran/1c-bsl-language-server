@@ -24,6 +24,7 @@ package com.github._1c_syntax.bsl.languageserver.inlayhints;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import com.github._1c_syntax.bsl.languageserver.context.symbol.MethodSymbol;
 import com.github._1c_syntax.bsl.languageserver.context.symbol.ParameterDefinition;
+import com.github._1c_syntax.bsl.languageserver.hover.MethodSymbolMarkupContentBuilder;
 import com.github._1c_syntax.bsl.languageserver.references.ReferenceIndex;
 import com.github._1c_syntax.bsl.languageserver.references.model.Reference;
 import com.github._1c_syntax.bsl.languageserver.utils.Ranges;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.lsp4j.InlayHint;
 import org.eclipse.lsp4j.InlayHintKind;
 import org.eclipse.lsp4j.InlayHintParams;
+import org.eclipse.lsp4j.MarkupContent;
+import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.SymbolKind;
 import org.springframework.stereotype.Component;
@@ -120,6 +123,11 @@ public class SourceDefinedMethodCallInlayHintSupplier implements InlayHintSuppli
 
           var position = new Position(callParam.getStart().getLine() - 1, callParam.getStart().getCharPositionInLine());
           inlayHint.setPosition(position);
+
+          // todo: refactor
+          var markdown = MethodSymbolMarkupContentBuilder.parameterToString(parameter);
+          var tooltip = new MarkupContent(MarkupKind.MARKDOWN, markdown);
+          inlayHint.setTooltip(tooltip);
 
           hints.add(inlayHint);
         }
