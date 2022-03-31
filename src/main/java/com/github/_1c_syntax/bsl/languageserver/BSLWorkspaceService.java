@@ -21,12 +21,14 @@
  */
 package com.github._1c_syntax.bsl.languageserver;
 
+import com.github._1c_syntax.bsl.languageserver.commands.ToggleCognitiveComplexityInlayHintsCommand;
 import com.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
 import com.github._1c_syntax.bsl.languageserver.providers.SymbolProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.ExecuteCommandParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbol;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
@@ -44,6 +46,8 @@ public class BSLWorkspaceService implements WorkspaceService {
 
   private final LanguageServerConfiguration configuration;
   private final SymbolProvider symbolProvider;
+
+  private final ToggleCognitiveComplexityInlayHintsCommand toggleCognitiveComplexityInlayHintsCommand;
 
   @Override
   @SuppressWarnings("deprecation")
@@ -63,5 +67,13 @@ public class BSLWorkspaceService implements WorkspaceService {
   @Override
   public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
     // no-op
+  }
+
+  @Override
+  public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
+    if (params.getCommand().equals(toggleCognitiveComplexityInlayHintsCommand.getId())) {
+      toggleCognitiveComplexityInlayHintsCommand.execute(params.getArguments());
+    }
+    return CompletableFuture.completedFuture(null);
   }
 }

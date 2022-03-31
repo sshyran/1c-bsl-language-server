@@ -70,7 +70,8 @@ public abstract class AbstractMethodComplexityCodeLensSupplier
     documentContext.getSymbolTree().getMethodSymbol(methodName).ifPresent((MethodSymbol methodSymbol) -> {
       int complexity = methodsComplexity.get(methodSymbol);
       var title = Resources.getResourceString(configuration.getLanguage(), getClass(), TITLE_KEY, complexity);
-      var command = new Command(title, "");
+      var command = new Command(title, "toggleCognitiveComplexityInlayHints");
+      command.setArguments(List.of(data));
 
       unresolved.setCommand(command);
     });

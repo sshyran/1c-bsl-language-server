@@ -40,6 +40,7 @@ import org.eclipse.lsp4j.DocumentFormattingOptions;
 import org.eclipse.lsp4j.DocumentLinkOptions;
 import org.eclipse.lsp4j.DocumentRangeFormattingOptions;
 import org.eclipse.lsp4j.DocumentSymbolOptions;
+import org.eclipse.lsp4j.ExecuteCommandOptions;
 import org.eclipse.lsp4j.FoldingRangeProviderOptions;
 import org.eclipse.lsp4j.HoverOptions;
 import org.eclipse.lsp4j.InitializeParams;
@@ -110,6 +111,7 @@ public class BSLLanguageServer implements LanguageServer, ProtocolExtension {
     capabilities.setColorProvider(getColorProvider());
     capabilities.setRenameProvider(getRenameProvider(params));
     capabilities.setInlayHintProvider(getInlayHintProvider());
+    capabilities.setExecuteCommandProvider(getExecuteCommandProvider());
 
     var result = new InitializeResult(capabilities, serverInfo);
 
@@ -315,5 +317,14 @@ public class BSLLanguageServer implements LanguageServer, ProtocolExtension {
     inlayHintOptions.setResolveProvider(Boolean.FALSE);
     inlayHintOptions.setWorkDoneProgress(Boolean.FALSE);
     return inlayHintOptions;
+  }
+
+  private static ExecuteCommandOptions getExecuteCommandProvider() {
+    var executeCommandOptions = new ExecuteCommandOptions();
+    executeCommandOptions.setCommands(
+      List.of("toggleCognitiveComplexityInlayHints")
+    );
+    executeCommandOptions.setWorkDoneProgress(Boolean.FALSE);
+    return executeCommandOptions;
   }
 }
