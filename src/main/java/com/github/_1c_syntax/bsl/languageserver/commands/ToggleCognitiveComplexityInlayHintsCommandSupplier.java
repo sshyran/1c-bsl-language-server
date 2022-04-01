@@ -28,24 +28,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ToggleCognitiveComplexityInlayHintsCommand implements CommandSupplier {
+public class ToggleCognitiveComplexityInlayHintsCommandSupplier implements CommandSupplier {
 
   private final CognitiveComplexityInlayHintSupplier complexityInlayHintSupplier;
   private final ObjectMapper objectMapper;
 
   @Override
-  public String getId() {
-    return "toggleCognitiveComplexityInlayHints";
-  }
-
-  @Override
   @SneakyThrows
-  @Nullable
   public Object execute(List<Object> arguments) {
     // todo: refactor as in code lens data
     Object jsonObject = arguments.get(0);

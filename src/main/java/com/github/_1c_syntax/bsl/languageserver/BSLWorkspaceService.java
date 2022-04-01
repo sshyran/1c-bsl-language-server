@@ -21,8 +21,8 @@
  */
 package com.github._1c_syntax.bsl.languageserver;
 
-import com.github._1c_syntax.bsl.languageserver.commands.ToggleCognitiveComplexityInlayHintsCommand;
 import com.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
+import com.github._1c_syntax.bsl.languageserver.providers.CommandProvider;
 import com.github._1c_syntax.bsl.languageserver.providers.SymbolProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -45,9 +45,8 @@ import java.util.concurrent.CompletableFuture;
 public class BSLWorkspaceService implements WorkspaceService {
 
   private final LanguageServerConfiguration configuration;
+  private final CommandProvider commandProvider;
   private final SymbolProvider symbolProvider;
-
-  private final ToggleCognitiveComplexityInlayHintsCommand toggleCognitiveComplexityInlayHintsCommand;
 
   @Override
   @SuppressWarnings("deprecation")
@@ -71,9 +70,6 @@ public class BSLWorkspaceService implements WorkspaceService {
 
   @Override
   public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
-    if (params.getCommand().equals(toggleCognitiveComplexityInlayHintsCommand.getId())) {
-      toggleCognitiveComplexityInlayHintsCommand.execute(params.getArguments());
-    }
-    return CompletableFuture.completedFuture(null);
+    return CompletableFuture.supplyAsync(() -> commandProvider.executeCommand(params));
   }
 }

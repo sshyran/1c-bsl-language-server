@@ -26,6 +26,7 @@ import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
 import com.github._1c_syntax.bsl.languageserver.jsonrpc.DiagnosticParams;
 import com.github._1c_syntax.bsl.languageserver.jsonrpc.Diagnostics;
 import com.github._1c_syntax.bsl.languageserver.jsonrpc.ProtocolExtension;
+import com.github._1c_syntax.bsl.languageserver.providers.CommandProvider;
 import com.github._1c_syntax.bsl.languageserver.providers.DocumentSymbolProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,7 @@ public class BSLLanguageServer implements LanguageServer, ProtocolExtension {
   private final LanguageServerConfiguration configuration;
   private final BSLTextDocumentService textDocumentService;
   private final BSLWorkspaceService workspaceService;
+  private final CommandProvider commandProvider;
   private final ClientCapabilitiesHolder clientCapabilitiesHolder;
   private final ServerContext context;
   private final ServerInfo serverInfo;
@@ -319,11 +321,9 @@ public class BSLLanguageServer implements LanguageServer, ProtocolExtension {
     return inlayHintOptions;
   }
 
-  private static ExecuteCommandOptions getExecuteCommandProvider() {
+  private ExecuteCommandOptions getExecuteCommandProvider() {
     var executeCommandOptions = new ExecuteCommandOptions();
-    executeCommandOptions.setCommands(
-      List.of("toggleCognitiveComplexityInlayHints")
-    );
+    executeCommandOptions.setCommands(commandProvider.getCommandIds());
     executeCommandOptions.setWorkDoneProgress(Boolean.FALSE);
     return executeCommandOptions;
   }
