@@ -118,17 +118,7 @@ public class CodeLensProvider {
   public void handleEvent(LanguageServerConfigurationChangedEvent event) {
     enabledCodeLensSuppliers = enabledCodeLensSuppliersProvider.getObject();
 
-    boolean clientSupportsRefreshCodeLenses = clientCapabilitiesHolder.getCapabilities()
-      .map(ClientCapabilities::getWorkspace)
-      .map(WorkspaceClientCapabilities::getCodeLens)
-      .map(CodeLensWorkspaceCapabilities::getRefreshSupport)
-      .orElse(false);
-
-    if (!clientSupportsRefreshCodeLenses) {
-      return;
-    }
-
-    clientHolder.execIfConnected(LanguageClient::refreshCodeLenses);
+    refreshCodeLenses();
   }
 
   /**
@@ -149,5 +139,19 @@ public class CodeLensProvider {
     }
 
     return codeLensDataObjectMapper.readValue(rawCodeLensData.toString(), CodeLensData.class);
+  }
+
+  public void refreshCodeLenses() {
+    boolean clientSupportsRefreshCodeLenses = clientCapabilitiesHolder.getCapabilities()
+      .map(ClientCapabilities::getWorkspace)
+      .map(WorkspaceClientCapabilities::getCodeLens)
+      .map(CodeLensWorkspaceCapabilities::getRefreshSupport)
+      .orElse(false);
+
+    if (!clientSupportsRefreshCodeLenses) {
+      return;
+    }
+
+    clientHolder.execIfConnected(LanguageClient::refreshCodeLenses);
   }
 }

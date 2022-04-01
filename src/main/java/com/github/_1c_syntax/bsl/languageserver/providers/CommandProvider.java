@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -39,9 +41,26 @@ public class CommandProvider {
   @Qualifier("commandSuppliersById")
   private Map<String, CommandSupplier> commandSuppliersById;
 
+  private final CodeLensProvider codeLensProvider;
+  private final InlayHintProvider inlayHintProvider;
+
   public Object executeCommand(ExecuteCommandParams params) {
     var commandId = params.getCommand();
-    return commandSuppliersById.getOrDefault(commandId, arguments -> null).execute(params.getArguments());
+    var commandSupplier = commandSuppliersById.getOrDefault(commandId, arguments -> Optional.empty());
+    var result = commandSupplier
+      .execute(params.getArguments())
+      .orElse(null);
+
+    CompletableFuture.runAsync(() -> {
+      if (commandSupplier.refreshInlayHintsAfterExecuteCommand()) {
+        inlayHintProvider.refreshInlayHints();
+      }
+      if (commandSupplier.refreshCodeLensesAfterExecuteCommand()) {
+        codeLensProvider.refreshCodeLenses();
+      }
+    });
+
+    return result;
   }
 
   public List<String> getCommandIds() {

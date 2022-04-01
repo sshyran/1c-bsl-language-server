@@ -26,13 +26,9 @@ import com.github._1c_syntax.bsl.languageserver.LanguageClientHolder;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import com.github._1c_syntax.bsl.languageserver.context.computer.ComplexitySecondaryLocation;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.InlayHint;
 import org.eclipse.lsp4j.InlayHintKind;
 import org.eclipse.lsp4j.InlayHintParams;
-import org.eclipse.lsp4j.InlayHintWorkspaceCapabilities;
-import org.eclipse.lsp4j.WorkspaceClientCapabilities;
-import org.eclipse.lsp4j.services.LanguageClient;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -51,8 +47,6 @@ import java.util.stream.Collectors;
 public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
 
   private final Map<URI, Set<String>> enabledMethods = new HashMap<>();
-  private final ClientCapabilitiesHolder clientCapabilitiesHolder;
-  private final LanguageClientHolder clientHolder;
 
   @Override
   public List<InlayHint> getInlayHints(DocumentContext documentContext, InlayHintParams params) {
@@ -86,16 +80,6 @@ public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
       methodsInFile.remove(methodName);
     } else {
       methodsInFile.add(methodName);
-    }
-
-    boolean refreshSupport = clientCapabilitiesHolder.getCapabilities()
-      .map(ClientCapabilities::getWorkspace)
-      .map(WorkspaceClientCapabilities::getInlayHint)
-      .map(InlayHintWorkspaceCapabilities::getRefreshSupport)
-      .orElse(Boolean.FALSE);
-
-    if (refreshSupport) {
-      clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
     }
   }
 }

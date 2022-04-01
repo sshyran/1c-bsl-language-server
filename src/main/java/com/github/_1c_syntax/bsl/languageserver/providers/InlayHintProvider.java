@@ -21,11 +21,17 @@
  */
 package com.github._1c_syntax.bsl.languageserver.providers;
 
+import com.github._1c_syntax.bsl.languageserver.ClientCapabilitiesHolder;
+import com.github._1c_syntax.bsl.languageserver.LanguageClientHolder;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import com.github._1c_syntax.bsl.languageserver.inlayhints.InlayHintSupplier;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.InlayHint;
 import org.eclipse.lsp4j.InlayHintParams;
+import org.eclipse.lsp4j.InlayHintWorkspaceCapabilities;
+import org.eclipse.lsp4j.WorkspaceClientCapabilities;
+import org.eclipse.lsp4j.services.LanguageClient;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -39,6 +45,9 @@ public class InlayHintProvider {
 
   private final Collection<InlayHintSupplier> suppliers;
 
+  private final ClientCapabilitiesHolder clientCapabilitiesHolder;
+  private final LanguageClientHolder clientHolder;
+
   public List<InlayHint> getInlayHint(DocumentContext documentContext, InlayHintParams params) {
     return suppliers.stream()
       .map(supplier -> supplier.getInlayHints(documentContext, params))
@@ -46,4 +55,15 @@ public class InlayHintProvider {
       .collect(Collectors.toList());
   }
 
+  public void refreshInlayHints() {
+    boolean refreshSupport = clientCapabilitiesHolder.getCapabilities()
+      .map(ClientCapabilities::getWorkspace)
+      .map(WorkspaceClientCapabilities::getInlayHint)
+      .map(InlayHintWorkspaceCapabilities::getRefreshSupport)
+      .orElse(Boolean.FALSE);
+
+    if (refreshSupport) {
+      clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
+    }
+  }
 }

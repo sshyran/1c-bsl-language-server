@@ -29,6 +29,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class ToggleCognitiveComplexityInlayHintsCommandSupplier implements Comma
 
   @Override
   @SneakyThrows
-  public Object execute(List<Object> arguments) {
+  public Optional<Object> execute(List<Object> arguments) {
     // todo: refactor as in code lens data
     Object jsonObject = arguments.get(0);
     AbstractMethodComplexityCodeLensSupplier.ComplexityCodeLensData codeLensData;
@@ -54,6 +55,11 @@ public class ToggleCognitiveComplexityInlayHintsCommandSupplier implements Comma
 
     complexityInlayHintSupplier.toggleHints(codeLensData.getUri(), codeLensData.getMethodName());
 
-    return null;
+    return Optional.empty();
+  }
+
+  @Override
+  public boolean refreshInlayHintsAfterExecuteCommand() {
+    return true;
   }
 }

@@ -21,9 +21,9 @@
  */
 package com.github._1c_syntax.bsl.languageserver.commands;
 
-import javax.annotation.CheckForNull;
 import java.beans.Introspector;
 import java.util.List;
+import java.util.Optional;
 
 public interface CommandSupplier {
 
@@ -37,6 +37,13 @@ public interface CommandSupplier {
     return simpleName;
   }
 
-  @CheckForNull
-  Object execute(List<Object> arguments);
+  Optional<Object> execute(List<Object> arguments);
+
+  default boolean refreshInlayHintsAfterExecuteCommand() {
+    return false;
+  }
+
+  default boolean refreshCodeLensesAfterExecuteCommand() {
+    return false;
+  }
 }
