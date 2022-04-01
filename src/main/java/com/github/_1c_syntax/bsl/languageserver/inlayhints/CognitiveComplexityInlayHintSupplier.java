@@ -24,6 +24,7 @@ package com.github._1c_syntax.bsl.languageserver.inlayhints;
 import com.github._1c_syntax.bsl.languageserver.ClientCapabilitiesHolder;
 import com.github._1c_syntax.bsl.languageserver.LanguageClientHolder;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
+import com.github._1c_syntax.bsl.languageserver.context.computer.ComplexitySecondaryLocation;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.InlayHint;
@@ -56,23 +57,27 @@ public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
   @Override
   public List<InlayHint> getInlayHints(DocumentContext documentContext, InlayHintParams params) {
     var enabledMethodsInFile = enabledMethods.getOrDefault(documentContext.getUri(), Collections.emptySet());
-    var cognitiveComplexityLocations = documentContext.getCognitiveComplexityData().getMethodsComplexitySecondaryLocations();
+    var cognitiveComplexityLocations = documentContext
+      .getCognitiveComplexityData()
+      .getMethodsComplexitySecondaryLocations();
 
     return documentContext.getSymbolTree().getMethodsByName().entrySet().stream()
       .filter(entry -> enabledMethodsInFile.contains(entry.getKey()))
       .map(Map.Entry::getValue)
-      .map(methodSymbol -> cognitiveComplexityLocations.get(methodSymbol).stream()
-        .map(complexitySecondaryLocation -> {
-          var inlayHint = new InlayHint();
-          inlayHint.setPosition(complexitySecondaryLocation.getRange().getStart());
-          inlayHint.setPaddingRight(Boolean.TRUE);
-          inlayHint.setKind(InlayHintKind.Parameter);
-          inlayHint.setLabel(complexitySecondaryLocation.getMessage());
-          return inlayHint;
-        })
+      .map(methodSymbol -> cognitiveComplexityLocations.getOrDefault(methodSymbol, Collections.emptyList()).stream()
+        .map(CognitiveComplexityInlayHintSupplier::toInlayHint)
         .collect(Collectors.toList()))
       .flatMap(Collection::stream)
       .collect(Collectors.toList());
+  }
+
+  private static InlayHint toInlayHint(ComplexitySecondaryLocation complexitySecondaryLocation) {
+    var inlayHint = new InlayHint();
+    inlayHint.setPosition(complexitySecondaryLocation.getRange().getStart());
+    inlayHint.setPaddingRight(Boolean.TRUE);
+    inlayHint.setKind(InlayHintKind.Parameter);
+    inlayHint.setLabel(complexitySecondaryLocation.getMessage());
+    return inlayHint;
   }
 
   public void toggleHints(URI uri, String methodName) {
@@ -92,6 +97,5 @@ public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
     if (refreshSupport) {
       clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
     }
-    clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
   }
 }
