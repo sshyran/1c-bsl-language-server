@@ -21,12 +21,16 @@
  */
 package com.github._1c_syntax.bsl.languageserver.inlayhints;
 
+import com.github._1c_syntax.bsl.languageserver.ClientCapabilitiesHolder;
 import com.github._1c_syntax.bsl.languageserver.LanguageClientHolder;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.InlayHint;
 import org.eclipse.lsp4j.InlayHintKind;
 import org.eclipse.lsp4j.InlayHintParams;
+import org.eclipse.lsp4j.InlayHintWorkspaceCapabilities;
+import org.eclipse.lsp4j.WorkspaceClientCapabilities;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +50,7 @@ import java.util.stream.Collectors;
 public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
 
   private final Map<URI, Set<String>> enabledMethods = new HashMap<>();
+  private final ClientCapabilitiesHolder clientCapabilitiesHolder;
   private final LanguageClientHolder clientHolder;
 
   @Override
@@ -78,6 +83,15 @@ public class CognitiveComplexityInlayHintSupplier implements InlayHintSupplier {
       methodsInFile.add(methodName);
     }
 
+    boolean refreshSupport = clientCapabilitiesHolder.getCapabilities()
+      .map(ClientCapabilities::getWorkspace)
+      .map(WorkspaceClientCapabilities::getInlayHint)
+      .map(InlayHintWorkspaceCapabilities::getRefreshSupport)
+      .orElse(Boolean.FALSE);
+
+    if (refreshSupport) {
+      clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
+    }
     clientHolder.execIfConnected(LanguageClient::refreshInlayHints);
   }
 }
