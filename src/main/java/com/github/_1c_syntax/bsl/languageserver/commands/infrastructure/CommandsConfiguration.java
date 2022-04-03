@@ -21,6 +21,7 @@
  */
 package com.github._1c_syntax.bsl.languageserver.commands.infrastructure;
 
+import com.github._1c_syntax.bsl.languageserver.commands.CommandArguments;
 import com.github._1c_syntax.bsl.languageserver.commands.CommandSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +40,11 @@ public class CommandsConfiguration {
 
   @Bean
   @SuppressWarnings("unchecked")
-  public Map<String, CommandSupplier> commandSuppliersById(
-    Collection<CommandSupplier> codeLensSuppliers
+  public Map<String, CommandSupplier<CommandArguments>> commandSuppliersById(
+    Collection<CommandSupplier<? extends CommandArguments>> codeLensSuppliers
   ) {
     return codeLensSuppliers.stream()
+      .map(commandSupplier -> (CommandSupplier<CommandArguments>) commandSupplier)
       .collect(Collectors.toMap(CommandSupplier::getId, Function.identity()));
   }
 

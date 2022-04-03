@@ -21,11 +21,12 @@
  */
 package com.github._1c_syntax.bsl.languageserver.commands;
 
+import org.eclipse.lsp4j.Command;
+
 import java.beans.Introspector;
-import java.util.List;
 import java.util.Optional;
 
-public interface CommandSupplier {
+public interface CommandSupplier<T extends CommandArguments> {
 
   default String getId() {
     String simpleName = getClass().getSimpleName();
@@ -37,7 +38,13 @@ public interface CommandSupplier {
     return simpleName;
   }
 
-  Optional<Object> execute(List<Object> arguments);
+  default Command createCommand(String title) {
+    return new Command(title, getId());
+  }
+
+  Class<T> getCommandArgumentsClass();
+
+  Optional<Object> execute(T arguments);
 
   default boolean refreshInlayHintsAfterExecuteCommand() {
     return false;
@@ -46,4 +53,5 @@ public interface CommandSupplier {
   default boolean refreshCodeLensesAfterExecuteCommand() {
     return false;
   }
+
 }

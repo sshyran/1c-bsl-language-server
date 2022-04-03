@@ -21,45 +21,16 @@
  */
 package com.github._1c_syntax.bsl.languageserver.commands;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github._1c_syntax.bsl.languageserver.codelenses.AbstractMethodComplexityCodeLensSupplier;
 import com.github._1c_syntax.bsl.languageserver.inlayhints.CognitiveComplexityInlayHintSupplier;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-
 @Component
-@RequiredArgsConstructor
-public class ToggleCognitiveComplexityInlayHintsCommandSupplier implements CommandSupplier {
+public class ToggleCognitiveComplexityInlayHintsCommandSupplier
+  extends AbstractToggleComplexityInlayHintsCommandSupplier {
 
-  private final CognitiveComplexityInlayHintSupplier complexityInlayHintSupplier;
-  private final ObjectMapper objectMapper;
-
-  @Override
-  @SneakyThrows
-  public Optional<Object> execute(List<Object> arguments) {
-    // todo: refactor as in code lens data
-    Object jsonObject = arguments.get(0);
-    AbstractMethodComplexityCodeLensSupplier.ComplexityCodeLensData codeLensData;
-    if (jsonObject instanceof AbstractMethodComplexityCodeLensSupplier.ComplexityCodeLensData) {
-      codeLensData = (AbstractMethodComplexityCodeLensSupplier.ComplexityCodeLensData) jsonObject;
-    } else {
-      codeLensData = objectMapper.readValue(
-        jsonObject.toString(),
-        AbstractMethodComplexityCodeLensSupplier.ComplexityCodeLensData.class
-      );
-    }
-
-    complexityInlayHintSupplier.toggleHints(codeLensData.getUri(), codeLensData.getMethodName());
-
-    return Optional.empty();
-  }
-
-  @Override
-  public boolean refreshInlayHintsAfterExecuteCommand() {
-    return true;
+  public ToggleCognitiveComplexityInlayHintsCommandSupplier(
+    CognitiveComplexityInlayHintSupplier complexityInlayHintSupplier
+  ) {
+    super(complexityInlayHintSupplier);
   }
 }

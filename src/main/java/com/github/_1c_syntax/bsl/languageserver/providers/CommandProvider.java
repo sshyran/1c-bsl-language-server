@@ -21,34 +21,38 @@
  */
 package com.github._1c_syntax.bsl.languageserver.providers;
 
+import com.github._1c_syntax.bsl.languageserver.commands.CommandArguments;
 import com.github._1c_syntax.bsl.languageserver.commands.CommandSupplier;
+import com.github._1c_syntax.bsl.languageserver.commands.databind.CommandArgumentsObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.eclipse.lsp4j.ExecuteCommandParams;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
 public class CommandProvider {
 
-  @Autowired
-  @Qualifier("commandSuppliersById")
-  private Map<String, CommandSupplier> commandSuppliersById;
+  private final Map<String, CommandSupplier<CommandArguments>> commandSuppliersById;
+  private final CommandArgumentsObjectMapper commandArgumentsObjectMapper;
 
   private final CodeLensProvider codeLensProvider;
   private final InlayHintProvider inlayHintProvider;
 
-  public Object executeCommand(ExecuteCommandParams params) {
-    var commandId = params.getCommand();
-    var commandSupplier = commandSuppliersById.getOrDefault(commandId, arguments -> Optional.empty());
+  public Object executeCommand(CommandArguments arguments) {
+    var commandId = arguments.getId();
+
+    var commandSupplier = commandSuppliersById.get(commandId);
+    if (commandSupplier == null) {
+      throw new RuntimeException("Unknown command id: " + commandId);
+    }
+
     var result = commandSupplier
-      .execute(params.getArguments())
+      .execute(arguments)
       .orElse(null);
 
     CompletableFuture.runAsync(() -> {
@@ -66,4 +70,22 @@ public class CommandProvider {
   public List<String> getCommandIds() {
     return List.copyOf(commandSuppliersById.keySet());
   }
+
+  @SneakyThrows
+  public CommandArguments extractArguments(ExecuteCommandParams codeLens) {
+    var rawArguments = codeLens.getArguments();
+
+    if (rawArguments.isEmpty()) {
+      throw new RuntimeException("Command arguments is empty");
+    }
+
+    var rawArgument = rawArguments.get(0);
+
+    if (rawArgument instanceof CommandArguments) {
+      return (CommandArguments) rawArgument;
+    }
+
+    return commandArgumentsObjectMapper.readValue(rawArgument.toString(), CommandArguments.class);
+  }
+
 }

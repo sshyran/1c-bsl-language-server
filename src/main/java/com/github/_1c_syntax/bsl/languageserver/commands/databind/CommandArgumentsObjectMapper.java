@@ -19,27 +19,30 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with BSL Language Server.
  */
-package com.github._1c_syntax.bsl.languageserver.inlayhints;
+package com.github._1c_syntax.bsl.languageserver.commands.databind;
 
-import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
-import com.github._1c_syntax.bsl.languageserver.context.computer.ComplexitySecondaryLocation;
-import com.github._1c_syntax.bsl.languageserver.context.symbol.MethodSymbol;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.github._1c_syntax.bsl.languageserver.commands.CommandArguments;
+import com.github._1c_syntax.bsl.languageserver.commands.CommandSupplier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
-public class CognitiveComplexityInlayHintSupplier extends AbstractComplexityInlayHintSupplier {
+public class CommandArgumentsObjectMapper extends ObjectMapper {
 
-  @Override
-  protected Map<MethodSymbol, List<ComplexitySecondaryLocation>> getComplexityLocations(
-    DocumentContext documentContext
-  ) {
-    return documentContext
-      .getCognitiveComplexityData()
-      .getMethodsComplexitySecondaryLocations();
+  private static final long serialVersionUID = 5095740064999651671L;
+
+  public CommandArgumentsObjectMapper(List<CommandSupplier<? extends CommandArguments>> commandSuppliers) {
+    super();
+
+    commandSuppliers.stream()
+      .map(CommandArgumentsObjectMapper::toNamedType)
+      .forEach(this::registerSubtypes);
+  }
+
+  private static NamedType toNamedType(CommandSupplier<? extends CommandArguments> commandSupplier) {
+    return new NamedType(commandSupplier.getCommandArgumentsClass(), commandSupplier.getId());
   }
 }

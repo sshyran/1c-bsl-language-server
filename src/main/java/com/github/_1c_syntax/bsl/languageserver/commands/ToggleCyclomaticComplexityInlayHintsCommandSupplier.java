@@ -19,27 +19,18 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with BSL Language Server.
  */
-package com.github._1c_syntax.bsl.languageserver.inlayhints;
+package com.github._1c_syntax.bsl.languageserver.commands;
 
-import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
-import com.github._1c_syntax.bsl.languageserver.context.computer.ComplexitySecondaryLocation;
-import com.github._1c_syntax.bsl.languageserver.context.symbol.MethodSymbol;
-import lombok.RequiredArgsConstructor;
+import com.github._1c_syntax.bsl.languageserver.inlayhints.CyclomaticComplexityInlayHintSupplier;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
 @Component
-@RequiredArgsConstructor
-public class CognitiveComplexityInlayHintSupplier extends AbstractComplexityInlayHintSupplier {
+public class ToggleCyclomaticComplexityInlayHintsCommandSupplier
+  extends AbstractToggleComplexityInlayHintsCommandSupplier {
 
-  @Override
-  protected Map<MethodSymbol, List<ComplexitySecondaryLocation>> getComplexityLocations(
-    DocumentContext documentContext
+  public ToggleCyclomaticComplexityInlayHintsCommandSupplier(
+    CyclomaticComplexityInlayHintSupplier complexityInlayHintSupplier
   ) {
-    return documentContext
-      .getCognitiveComplexityData()
-      .getMethodsComplexitySecondaryLocations();
+    super(complexityInlayHintSupplier);
   }
 }

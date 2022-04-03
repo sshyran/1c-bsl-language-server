@@ -87,7 +87,6 @@ import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SelectionRange;
 import org.eclipse.lsp4j.SelectionRangeParams;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.TextDocumentClientCapabilities;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -306,6 +305,7 @@ public class BSLTextDocumentService implements TextDocumentService, ProtocolExte
     return CompletableFuture.supplyAsync(() -> colorProvider.getColorPresentation(documentContext, params));
   }
 
+  @SuppressWarnings("UnstableApiUsage")
   @Override
   public CompletableFuture<List<InlayHint>> inlayHint(InlayHintParams params) {
     var documentContext = context.getDocument(params.getTextDocument().getUri());

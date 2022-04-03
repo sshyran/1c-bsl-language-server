@@ -70,6 +70,8 @@ public class BSLWorkspaceService implements WorkspaceService {
 
   @Override
   public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
-    return CompletableFuture.supplyAsync(() -> commandProvider.executeCommand(params));
+    var arguments = commandProvider.extractArguments(params);
+
+    return CompletableFuture.supplyAsync(() -> commandProvider.executeCommand(arguments));
   }
 }

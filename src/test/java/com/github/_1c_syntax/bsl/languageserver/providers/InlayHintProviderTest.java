@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SuppressWarnings("UnstableApiUsage")
 @SpringBootTest
 @CleanupContextBeforeClassAndAfterEachTestMethod
@@ -60,5 +62,6 @@ class InlayHintProviderTest {
     var inlayHints = provider.getInlayHint(documentContext, params);
 
     // then
+    assertThat(inlayHints).hasSizeGreaterThan(0);
   }
 }
