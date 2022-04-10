@@ -21,11 +21,11 @@
  */
 package com.github._1c_syntax.bsl.languageserver.providers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github._1c_syntax.bsl.languageserver.ClientCapabilitiesHolder;
 import com.github._1c_syntax.bsl.languageserver.LanguageClientHolder;
 import com.github._1c_syntax.bsl.languageserver.codelenses.CodeLensData;
 import com.github._1c_syntax.bsl.languageserver.codelenses.CodeLensSupplier;
-import com.github._1c_syntax.bsl.languageserver.codelenses.databind.CodeLensDataObjectMapper;
 import com.github._1c_syntax.bsl.languageserver.configuration.events.LanguageServerConfigurationChangedEvent;
 import com.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class CodeLensProvider {
   private final ObjectProvider<List<CodeLensSupplier<CodeLensData>>> enabledCodeLensSuppliersProvider;
   private final LanguageClientHolder clientHolder;
   private final ClientCapabilitiesHolder clientCapabilitiesHolder;
-  private final CodeLensDataObjectMapper codeLensDataObjectMapper;
+  private final ObjectMapper objectMapper;
 
   private List<CodeLensSupplier<CodeLensData>> enabledCodeLensSuppliers;
 
@@ -138,7 +138,7 @@ public class CodeLensProvider {
       return (CodeLensData) rawCodeLensData;
     }
 
-    return codeLensDataObjectMapper.readValue(rawCodeLensData.toString(), CodeLensData.class);
+    return objectMapper.readValue(rawCodeLensData.toString(), CodeLensData.class);
   }
 
   public void refreshCodeLenses() {
