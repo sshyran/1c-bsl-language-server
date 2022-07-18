@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings("UnstableApiUsage")
 public class SourceDefinedMethodCallInlayHintSupplier implements InlayHintSupplier {
 
   private final ReferenceIndex referenceIndex;

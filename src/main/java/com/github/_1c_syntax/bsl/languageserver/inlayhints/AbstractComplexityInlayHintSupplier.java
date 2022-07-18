@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractComplexityInlayHintSupplier implements InlayHintSupplier {
   private final Map<URI, Set<String>> enabledMethods = new HashMap<>();
 

@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings("UnstableApiUsage")
 public class InlayHintProvider {
 
   private final Collection<InlayHintSupplier> suppliers;

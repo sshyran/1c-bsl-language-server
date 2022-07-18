@@ -305,7 +305,6 @@ public class BSLTextDocumentService implements TextDocumentService, ProtocolExte
     return CompletableFuture.supplyAsync(() -> colorProvider.getColorPresentation(documentContext, params));
   }
 
-  @SuppressWarnings("UnstableApiUsage")
   @Override
   public CompletableFuture<List<InlayHint>> inlayHint(InlayHintParams params) {
     var documentContext = context.getDocument(params.getTextDocument().getUri());
