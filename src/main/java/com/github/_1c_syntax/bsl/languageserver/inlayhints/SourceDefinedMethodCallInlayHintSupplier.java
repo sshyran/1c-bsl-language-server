@@ -32,6 +32,7 @@ import com.github._1c_syntax.bsl.languageserver.utils.Trees;
 import com.github._1c_syntax.bsl.parser.BSLParser;
 import com.github._1c_syntax.bsl.parser.BSLParserRuleContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.lsp4j.InlayHint;
 import org.eclipse.lsp4j.InlayHintKind;
 import org.eclipse.lsp4j.InlayHintParams;
@@ -100,7 +101,7 @@ public class SourceDefinedMethodCallInlayHintSupplier implements InlayHintSuppli
           var passedValue = callParam.getText();
           var defaultValue = parameter.getDefaultValue();
 
-          if (parameter.getName().equalsIgnoreCase(passedValue)) {
+          if (StringUtils.containsIgnoreCase(passedValue, parameter.getName())) {
             continue;
           }
 
